@@ -28,6 +28,10 @@ Two test datasets are available:
   - Generates output.csv (703MB)
 
 ## Performance Testing
+
+> Find a detailed analysis of the reference implementation in `results/baseline-performance-analysis.md`
+
+
 To test performance:
 ```bash
 cd /localtmp/efficient24
@@ -36,30 +40,40 @@ LC_NUMERIC=en_US perf stat -e cycles yourjoin f1.csv f2.csv f3.csv f4.csv|cat >/
 
 On the test machine provided by the teacher, the performance for the small and large dataset is as follows:
 
+### Small dataset
+
+Command:
+
 ```bash
-[ep11713301:/localtmp/efficient24:41] LC_NUMERIC=en_US perf stat -e cycles ~/exc_files/myjoin a.csv b.csv c.csv d.csv|cat >/dev/null
-
- Performance counter stats for '/home/ep24/ep11713301/exc_files/myjoin a.csv b.csv c.csv d.csv':
-
-        31,020,895      cycles                                   
-
-       0.016394673 seconds time elapsed
-
-       0.000000000 seconds user
-       0.028339000 seconds sys
-
-
-[ep11713301:/localtmp/efficient24:42] LC_NUMERIC=en_US perf stat -e cycles ~/exc_files/myjoin f1.csv f2.csv f3.csv f4.csv|cat >/dev/null
-
- Performance counter stats for '/home/ep24/ep11713301/exc_files/myjoin f1.csv f2.csv f3.csv f4.csv':
-
-   156,559,163,115      cycles                                   
-
-      11.242711646 seconds time elapsed
-
-       9.090886000 seconds user
-       1.553000000 seconds sys
+LC_NUMERIC=en_US perf stat -e cycles ~/exc_files/myjoin a.csv b.csv c.csv d.csv|cat >/dev/null
 ```
+
+Output:
+
+```
+31,020,895      cycles                                   
+0.016394673 seconds time elapsed
+0.000000000 seconds user
+0.028339000 seconds sys
+```
+
+### Large dataset
+
+Command: 
+
+```bash
+LC_NUMERIC=en_US perf stat -e cycles ~/exc_files/myjoin f1.csv f2.csv f3.csv f4.csv|cat >/dev/null
+```
+
+Output:
+
+```bash
+156,559,163,115      cycles                                   11.242711646 seconds time elapsed
+9.090886000 seconds user
+1.553000000 seconds sys
+```
+
+## Verifying output correctness
 
 To verify output correctness:
 ```bash

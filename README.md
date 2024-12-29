@@ -1,5 +1,8 @@
 # Efficient Programs 2024/2025, Group 8
 
+## Miro Link
+https://miro.com/app/board/uXjVLy3w6PI=/
+
 ## Efficient Join Implementation Project
 
 ## Project Overview

@@ -1,4 +1,4 @@
-# Baseline Hashmap Performance Analysis
+# Hashmap Performance Analysis
 
 ## Overview
 Analysis of the hashmap-based implementation's performance characteristics using `perf stat` with various metrics.

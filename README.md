@@ -36,7 +36,7 @@ https://miro.com/app/board/uXjVLy3w6PI=/
 
    `<name of your file> f1.csv f2.csv f3.csv f4.csv | sort | diff - output.csv`
     
-   e.g. `baseline f1.csv f2.csv f3.csv f4.csv | sort | diff - output.csv
+   e.g. `baseline f1.csv f2.csv f3.csv f4.csv | sort | diff - output.csv`
 
    If the output of the comparison is empty, then your results are the same.
 
@@ -48,7 +48,7 @@ https://miro.com/app/board/uXjVLy3w6PI=/
 
    b. The performance results can be pushed to `efficient-programs/results/<type of improvement>_performance.csv`, e.g. `efficient-programs/results/baseline.csv`
 
-8. Describe in a few key points how your type of improvement actually made the code more efficient. See [the reference implementation performance analysis](https://github.com/MehdinMasinovic/efficient-programs/blob/main/results/reference-performance-analysis.md) as reference. Store the key points in efficient-programs/results/<type of improvement>-performance-analysis.md.
+8. Describe in a few key points how your type of improvement actually made the code more efficient. See [the reference implementation performance analysis](https://github.com/MehdinMasinovic/efficient-programs/blob/main/results/reference-performance-analysis.md) as reference. Store the key points in efficient-programs/results/<type of improvement\>-performance-analysis.md.
 
     >Tipp: If you feel lazy, just pass the CSV output of the performance analysis + the markdown of the reference performance analysis to your LLM and ask it to do the same with your data. However, please make sure that the interpretation of the LLM makes sense (numbers are copied correctly, reasoning makes sense, etc.). Simply replace the placeholders `<>` in the following sample prompt:
 

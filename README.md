@@ -50,7 +50,7 @@ https://miro.com/app/board/uXjVLy3w6PI=/
 
 8. Describe in a few key points how your type of improvement actually made the code more efficient. See [the reference implementation performance analysis](https://github.com/MehdinMasinovic/efficient-programs/blob/main/results/reference-performance-analysis.md) as reference. Store the key points in efficient-programs/results/<type of improvement>-performance-analysis.md.
 
-    >Tipp: If you feel lazy, just pass the CSV output of the performance analysis + the markdown of the reference performance analysis to your LLM and ask it to do the same with your data. Simply replace the placeholders `<>` in the following sample prompt:
+    >Tipp: If you feel lazy, just pass the CSV output of the performance analysis + the markdown of the reference performance analysis to your LLM and ask it to do the same with your data. However, please make sure that the interpretation of the LLM makes sense (numbers are copied correctly, reasoning makes sense, etc.). Simply replace the placeholders `<>` in the following sample prompt:
 
 ```txt
 Prepare a markdown file explaining the results obtained from the attached <your improvement name>_performance.csv according to the markdown provided in reference-performance-analysis.md. The output markdown should be named <your improvement name>-performance-analysis.md.

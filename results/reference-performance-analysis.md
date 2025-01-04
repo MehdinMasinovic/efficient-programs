@@ -1,4 +1,4 @@
-# Baseline Performance Analysis
+# Reference Performance Analysis
 
 ## Overview
 Analysis of the reference implementation's performance characteristics using `perf stat` with various metrics.
@@ -83,7 +83,7 @@ System time:              1.48 seconds
    - User/System time ratio suggests I/O bound operations
    - Potential for optimization through better I/O handling
 
-## Baseline Performance Summary
+## Reference Performance Summary
 - Total Cycles: ~157.4 billion
 - Total Time: ~11.1 seconds
 - Primary bottlenecks appear to be memory access patterns and system call overhead

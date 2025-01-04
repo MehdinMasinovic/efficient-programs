@@ -16,7 +16,15 @@ https://miro.com/app/board/uXjVLy3w6PI=/
 
    e.g. `g++ -o baseline baseline.cpp`
 
-3. Run the performance analysis on the code:
+3. Copy [parse_perf_output.py](https://github.com/MehdinMasinovic/efficient-programs/blob/main/src/parse_perf_output.py) and [run_perf_analysis.sh](https://github.com/MehdinMasinovic/efficient-programs/tree/main/src). Also, **ensure that the files have execution permissions** by running:
+
+   `chmod +x parse_perf_output.py run_perf_analysis.sh`
+
+4. Copy the data from the teachers folder into your own so you can run the code:
+
+    `cp /localtmp/efficient24/* .`
+   
+5. Run the performance analysis on the code:
 
    `./run_perf_analysis.sh <type of improvement> "<name of your file> f1.csv f2.csv f3.csv f4.csv"`
    
@@ -24,7 +32,7 @@ https://miro.com/app/board/uXjVLy3w6PI=/
 
    > The performance analysis will provide you with a CSV file containing the performance metrics. It will be named as `<type of improvement>_performance.csv`, e.g. `baseline_performance.csv`.
 
-5. Ensure the results are correct by comparing it to the teacher's output file:
+6. Ensure the results are correct by comparing it to the teacher's output file:
 
    `<name of your file> f1.csv f2.csv f3.csv f4.csv | sort | diff - output.csv`
     
@@ -34,13 +42,13 @@ https://miro.com/app/board/uXjVLy3w6PI=/
 
 > Note: Please create a dedicated branch for your improvement, and then create a Pull Request so at least one other person can review the changes.
 
-6. Push the improved code and the performance results to the GitHub project:
+7. Push the improved code and the performance results to the GitHub project:
 
    a. The code can be pushed to `efficient-programs/src/<your-code>.cpp`, e.g. `efficient-programs/src/baseline.cpp`
 
    b. The performance results can be pushed to `efficient-programs/results/<type of improvement>_performance.csv`, e.g. `efficient-programs/results/baseline.csv`
 
-9. Describe in a few key points how your type of improvement actually made the code more efficient. See [the reference implementation performance analysis](https://github.com/MehdinMasinovic/efficient-programs/blob/main/results/reference-performance-analysis.md) as reference. Store the key points in efficient-programs/results/<type of improvement>-performance-analysis.md.
+8. Describe in a few key points how your type of improvement actually made the code more efficient. See [the reference implementation performance analysis](https://github.com/MehdinMasinovic/efficient-programs/blob/main/results/reference-performance-analysis.md) as reference. Store the key points in efficient-programs/results/<type of improvement>-performance-analysis.md.
 
     >Tipp: If you feel lazy, just pass the CSV output of the performance analysis + the markdown of the reference performance analysis to your LLM and ask it to do the same with your data. Simply replace the placeholders `<>` in the following sample prompt:
 

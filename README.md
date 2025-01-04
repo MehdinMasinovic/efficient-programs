@@ -63,6 +63,8 @@ reference-performance-analysis.md:
 
 ```
 
+9. As a final step, please add one more row to the [result table](https://github.com/MehdinMasinovic/efficient-programs/tree/baseline/results#readme) to keep track of the individual changes made.  
+
 ## Efficient Join Implementation Project
 
 ## Project Overview

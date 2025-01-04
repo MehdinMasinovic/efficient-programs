@@ -16,7 +16,15 @@ https://miro.com/app/board/uXjVLy3w6PI=/
 
    e.g. `g++ -o baseline baseline.cpp`
 
-3. Run the performance analysis on the code:
+3. Copy [parse_perf_output.py](https://github.com/MehdinMasinovic/efficient-programs/blob/main/src/parse_perf_output.py) and [run_perf_analysis.sh](https://github.com/MehdinMasinovic/efficient-programs/blob/main/src/run_perf_analysis.sh). Also, **ensure that the files have execution permissions** by running:
+
+   `chmod +x parse_perf_output.py run_perf_analysis.sh`
+
+4. Copy the data from the teachers folder into your own so you can run the code:
+
+    `cp /localtmp/efficient24/* .`
+   
+5. Run the performance analysis on the code:
 
    `./run_perf_analysis.sh <type of improvement> "<name of your file> f1.csv f2.csv f3.csv f4.csv"`
    
@@ -24,28 +32,43 @@ https://miro.com/app/board/uXjVLy3w6PI=/
 
    > The performance analysis will provide you with a CSV file containing the performance metrics. It will be named as `<type of improvement>_performance.csv`, e.g. `baseline_performance.csv`.
 
-5. Ensure the results are correct by comparing it to the teacher's output file:
+6. Ensure the results are correct by comparing it to the teacher's output file:
 
    `<name of your file> f1.csv f2.csv f3.csv f4.csv | sort | diff - output.csv`
     
-   e.g. `baseline f1.csv f2.csv f3.csv f4.csv | sort | diff - output.csv
+   e.g. `baseline f1.csv f2.csv f3.csv f4.csv | sort | diff - output.csv`
 
    If the output of the comparison is empty, then your results are the same.
 
-> Note: Please create a dedicated branch for your improvement, and then create a Pull Request so at least one other person can review the changes.
+7. Push the improved code and the performance results to the GitHub project:
 
-6. Push the improved code and the performance results to the GitHub project:
+> Note: Please create a dedicated branch for your improvement, and then create a Pull Request so at least one other person can review the changes.
 
    a. The code can be pushed to `efficient-programs/src/<your-code>.cpp`, e.g. `efficient-programs/src/baseline.cpp`
 
-   b. The performance results can be pushed to `efficient-programs/results/<type of improvement>_performance.csv`, e.g. `efficient-programs/results/baseline.csv`
+   b. The performance results can be pushed to `efficient-programs/results/<type of improvement>_performance.csv`, e.g. `efficient-programs/results/baseline_performance.csv`
 
-9. Describe in a few key points how your type of improvement actually made the code more efficient. See [the reference implementation performance analysis](https://github.com/MehdinMasinovic/efficient-programs/blob/main/results/reference-performance-analysis.md) as reference. Store the key points in efficient-programs/results/<type of improvement>-performance-analysis.md.
+8. Describe in a few key points how your type of improvement actually made the code more efficient. See [the reference implementation performance analysis](https://github.com/MehdinMasinovic/efficient-programs/blob/main/results/reference-performance-analysis.md) as reference. Store the key points in efficient-programs/results/<type of improvement\>-performance-analysis.md.
+
+    >Tipp: If you feel lazy, just pass the CSV output of the performance analysis + the markdown of the reference performance analysis to your LLM and ask it to do the same with your data. However, please make sure that the interpretation of the LLM makes sense (numbers are copied correctly, reasoning makes sense, etc.). Simply replace the placeholders `<>` in the following sample prompt:
+
+```txt
+Prepare a markdown file explaining the results obtained from the attached <your improvement name>_performance.csv according to the markdown provided in reference-performance-analysis.md. The output markdown should be named <your improvement name>-performance-analysis.md.
+
+<your improvement name>_performance.csv:
+<insert the content here>
+
+reference-performance-analysis.md:
+<insert the content here>
+
+```
+
+9. As a final step, please add one more row to the [result table](https://github.com/MehdinMasinovic/efficient-programs/tree/baseline/results#readme) to keep track of the individual changes made.  
 
 ## Efficient Join Implementation Project
 
 ## Project Overview
-This project involves implementing an efficient join operation across four CSV files, with the goal of optimizing CPU performance. The implementation should match the output of a reference implementation while potentially improving upon its performance characteristics.
+This project involves implementing an efficient join operation across four CSV files, with the goal of optimizing program efficiency. The implementation should match the output of a reference implementation while potentially improving upon its performance characteristics.
 
 ## Problem Description
 Implement a join operation that:
@@ -61,7 +84,7 @@ Implement a join operation that:
    - Second field of file4
 
 ## Reference Implementation
-A baseline implementation using Unix commands is provided, taking approximately 155,414,886,890 cycles on the reference machine.
+A reference implementation using Unix commands is provided, taking approximately 155,414,886,890 cycles on the reference machine.
 
 ## Test Data
 Two test datasets are available:
@@ -71,53 +94,12 @@ Two test datasets are available:
 
 ## Performance Testing
 
-> Find a detailed analysis of the reference implementation in `results/baseline-performance-analysis.md`
-
-
-To test performance:
-```bash
-cd /localtmp/efficient24
-LC_NUMERIC=en_US perf stat -e cycles yourjoin f1.csv f2.csv f3.csv f4.csv|cat >/dev/null
-```
-
-On the test machine provided by the teacher, the performance for the small and large dataset is as follows:
-
-### Small dataset
-
-Command:
-
-```bash
-LC_NUMERIC=en_US perf stat -e cycles ~/exc_files/myjoin a.csv b.csv c.csv d.csv|cat >/dev/null
-```
-
-Output:
-
-```
-31,020,895      cycles                                   
-0.016394673 seconds time elapsed
-0.000000000 seconds user
-0.028339000 seconds sys
-```
-
-### Large dataset
-
-Command: 
-
-```bash
-LC_NUMERIC=en_US perf stat -e cycles ~/exc_files/myjoin f1.csv f2.csv f3.csv f4.csv|cat >/dev/null
-```
-
-Output:
-
-```bash
-156,559,163,115      cycles                                   11.242711646 seconds time elapsed
-9.090886000 seconds user
-1.553000000 seconds sys
-```
+Find a detailed analysis of the reference implementation in [results/reference-performance-analysis.md](https://github.com/MehdinMasinovic/efficient-programs/blob/baseline/results/reference-performance-analysis.md)
 
 ## Verifying output correctness
 
 To verify output correctness:
+
 ```bash
 # For small dataset
 cd /localtmp/efficient24
@@ -148,6 +130,7 @@ yourjoin f1.csv f2.csv f3.csv f4.csv|sort|diff - output.csv
 ├── reference/
 │   ├── myjoin.sh    # Reference bash implementation
 │   └── myjoin.pl    # Prolog logical representation
-├── data/			# Contains the "small" data (a-d.csv, abcd.csv)
-└── src/            # Implementation directory
+├── results/    # Contains the results and performance analysis
+├── data/    # Contains the "small" data (a-d.csv, abcd.csv)
+└── src/    # Implementation directory
 ```

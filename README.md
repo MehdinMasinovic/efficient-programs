@@ -3,6 +3,45 @@
 ## Miro Link
 https://miro.com/app/board/uXjVLy3w6PI=/
 
+## TL;DR
+
+1. Log into the server provided by the teacher:
+
+   `host: g0.complang.tuwien.ac.at`   
+   `user: ep<your student number>`
+
+2. Work on your improvement, then compile the code:
+
+   `g++ -o <name of your file> <name of your file>.cpp`
+
+   e.g. `g++ -o baseline baseline.cpp`
+
+3. Run the performance analysis on the code:
+
+   `./run_perf_analysis.sh <type of improvement> "<name of your file> f1.csv f2.csv f3.csv f4.csv"`
+   
+   e.g. `./run_perf_analysis.sh baseline "baseline f1.csv f2.csv f3.csv f4.csv"`
+
+   > The performance analysis will provide you with a CSV file containing the performance metrics. It will be named as `<type of improvement>_performance.csv`, e.g. `baseline_performance.csv`.
+
+5. Ensure the results are correct by comparing it to the teacher's output file:
+
+   `<name of your file> f1.csv f2.csv f3.csv f4.csv | sort | diff - output.csv`
+    
+   e.g. `baseline f1.csv f2.csv f3.csv f4.csv | sort | diff - output.csv
+
+   If the output of the comparison is empty, then your results are the same.
+
+> Note: Please create a dedicated branch for your improvement, and then create a Pull Request so at least one other person can review the changes.
+
+6. Push the improved code and the performance results to the GitHub project:
+
+   a. The code can be pushed to `efficient-programs/src/<your-code>.cpp`, e.g. `efficient-programs/src/baseline.cpp`
+
+   b. The performance results can be pushed to `efficient-programs/results/<type of improvement>_performance.csv`, e.g. `efficient-programs/results/baseline.csv`
+
+9. Describe in a few key points how your type of improvement actually made the code more efficient. See [the reference implementation performance analysis](https://github.com/MehdinMasinovic/efficient-programs/blob/main/results/reference-performance-analysis.md) as reference. Store the key points in efficient-programs/results/<type of improvement>-performance-analysis.md.
+
 ## Efficient Join Implementation Project
 
 ## Project Overview

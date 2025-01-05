@@ -1,76 +1,92 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 #include <unordered_map>
 #include <fcntl.h>
 #include <unistd.h>
-#include <cstring>
+#include <sys/stat.h>
+#include <sys/mman.h>
 
 struct Record {
     std::string key;
     std::string value;
 };
 
-std::vector<Record> readCSV(const char* filename) {
+std::vector<Record> readCSV(const std::string& filename) {
     std::vector<Record> records;
-    records.reserve(1000000);  // Pre-allocate space
 
-    int fd = open(filename, O_RDONLY);
+    // Open file using low-level I/O
+    int fd = open(filename.c_str(), O_RDONLY);
     if (fd == -1) {
-        throw std::runtime_error("Cannot open file: " + std::string(filename));
+        throw std::runtime_error("Cannot open file: " + filename);
     }
 
-    // 1MB buffer for reading
-    char buffer[1024*1024];
-    char leftover[1024];  // For lines split across buffer boundaries
-    size_t leftover_size = 0;
+    // Get file size
+    struct stat sb;
+    if (fstat(fd, &sb) == -1) {
+        close(fd);
+        throw std::runtime_error("Cannot get file size");
+    }
 
-    ssize_t bytes_read;
-    while ((bytes_read = read(fd, buffer + leftover_size, sizeof(buffer) - leftover_size)) > 0) {
-        char* start = buffer;
-        char* end = buffer + leftover_size + bytes_read;
-        char* current = start;
+    // Memory map the file
+    const char* data = static_cast<const char*>(
+        mmap(nullptr, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0)
+    );
 
-        // Process each line in the buffer
-        while (current < end) {
-            char* line_end = static_cast<char*>(memchr(current, '\n', end - current));
+    if (data == MAP_FAILED) {
+        close(fd);
+        throw std::runtime_error("Cannot mmap file");
+    }
 
-            if (line_end) {
-                // Found a complete line
-                char* comma = static_cast<char*>(memchr(current, ',', line_end - current));
-                if (comma) {
-                    Record record;
-                    record.key.assign(current, comma - current);
-                    record.value.assign(comma + 1, line_end - (comma + 1));
-                    records.push_back(std::move(record));
-                }
-                current = line_end + 1;
-            } else {
-                // Incomplete line at buffer end
-                leftover_size = end - current;
-                memmove(leftover, current, leftover_size);
-                break;
+    // Pre-allocate space for records (estimate based on average line length)
+    size_t estimated_records = sb.st_size / 30;  // Assume average line length of 30 bytes
+    records.reserve(estimated_records);
+
+    // Process the memory-mapped file
+    const char* current = data;
+    const char* end = data + sb.st_size;
+    const char* line_start = current;
+
+    while (current < end) {
+        if (*current == '\n') {
+            // Find comma in current line
+            const char* comma = line_start;
+            while (comma < current && *comma != ',') {
+                ++comma;
             }
-        }
 
-        // Copy any leftover data to beginning of buffer
-        if (leftover_size > 0) {
-            memcpy(buffer, leftover, leftover_size);
+            if (comma < current) {
+                Record record;
+                record.key.assign(line_start, comma - line_start);
+                record.value.assign(comma + 1, current - (comma + 1));
+                records.push_back(std::move(record));
+            }
+
+            line_start = current + 1;
         }
+        ++current;
     }
 
-    // Handle any final leftover data
-    if (leftover_size > 0) {
-        char* comma = static_cast<char*>(memchr(leftover, ',', leftover_size));
-        if (comma) {
+    // Handle last line if it doesn't end with newline
+    if (line_start < end) {
+        const char* comma = line_start;
+        while (comma < end && *comma != ',') {
+            ++comma;
+        }
+
+        if (comma < end) {
             Record record;
-            record.key.assign(leftover, comma - leftover);
-            record.value.assign(comma + 1, leftover_size - (comma - leftover) - 1);
+            record.key.assign(line_start, comma - line_start);
+            record.value.assign(comma + 1, end - (comma + 1));
             records.push_back(std::move(record));
         }
     }
 
+    // Cleanup
+    munmap(const_cast<char*>(data), sb.st_size);
     close(fd);
+
     return records;
 }
 
@@ -81,7 +97,7 @@ int main(int argc, char* argv[]) {
     }
 
     try {
-        // Read all files using custom IO
+        // Read all files with buffered I/O
         auto file1 = readCSV(argv[1]);
         auto file2 = readCSV(argv[2]);
         auto file3 = readCSV(argv[3]);

@@ -15,6 +15,7 @@
 * [Project Structure](#project-structure)
 
 ## Miro Link
+
 https://miro.com/app/board/uXjVLy3w6PI=/
 
 ## TL;DR
@@ -78,6 +79,56 @@ reference-performance-analysis.md:
 ```
 
 9. As a final step, please add one more row to the [result table](https://github.com/MehdinMasinovic/efficient-programs/tree/baseline/results#readme) to keep track of the individual changes made.  
+
+## Makefile
+
+The steps in [TL;DR](#tl-dr) still apply, but in order to speed up development, a Makefile has been added.
+
+The Makefile is expected to be run on the remote machine.
+
+### Building
+
+It is important to note, that the `TARGET_NAME` variable has to be set in order to compile a specific version. If it is set blank, the `baseline` version will be selected.
+
+As usual for `make` the default recipe will simply build the executable:
+
+```sh
+make TARGET_NAME=<your improvement name>
+make TARGET_NAME=baseline
+```
+
+### Verification
+
+Verification of a specific implementation can be done via the recipe `verify` and `verify_small`:
+
+```sh
+make TARGET_NAME=<your improvement name> verify
+make TARGET_NAME=baseline verify
+```
+
+Use `verify` to verify your implementation against the whole dataset, and `verify_small` to verify it against the small dataset.
+
+### Analysis
+
+The analysis of your implementation can be done via the recipe `analyze`:
+
+```sh
+make TARGET_NAME=<your improvement name> analyze
+make TARGET_NAME=baseline analyze
+```
+
+### Debug & Run
+
+Simply running the executable after building is accomplished with the `run` recipe, compiling with debug symbols can be achieved with the `debug` recipe.
+
+### Cleaning
+
+The usual `clean` recipe is available:
+
+```sh
+make clean
+```
+
 
 ## Efficient Join Implementation Project
 

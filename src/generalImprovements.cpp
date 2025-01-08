@@ -180,7 +180,7 @@ int main(int argc, char* argv[]) {
         // Set up output buffering
         std::ios_base::sync_with_stdio(false);
         std::cout.tie(nullptr);
-        char output_buffer[1024*1024];  // 1MB output buffer
+        char output_buffer[1024*1024*5];  // 5MB output buffer
         std::cout.rdbuf()->pubsetbuf(output_buffer, sizeof(output_buffer));
 
         // Perform join

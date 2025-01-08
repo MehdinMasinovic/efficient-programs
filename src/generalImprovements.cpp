@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
+//#include <algorithm>
 
 struct Record {
     std::string key;
@@ -52,15 +53,14 @@ std::vector<Record> readCSV(const std::string& filename) {
         if (*current == '\n') {
             // Find comma in current line
             const char* comma = line_start;
-            while (comma < current && *comma != ',') {
-                ++comma;
+            // comma = std::find(line_start, current, ',');
+            while (comma < end && *comma != ',') {
+               ++comma;
             }
 
             if (comma < current) {
-                Record record;
-                record.key.assign(line_start, comma - line_start);
-                record.value.assign(comma + 1, current - (comma + 1));
-                records.push_back(std::move(record));
+                Record record{std::string(line_start, comma - line_start), std::string(comma + 1, current - (comma + 1))};
+                records.push_back(record);
             }
 
             line_start = current + 1;
@@ -72,14 +72,13 @@ std::vector<Record> readCSV(const std::string& filename) {
     if (line_start < end) {
         const char* comma = line_start;
         while (comma < end && *comma != ',') {
-            ++comma;
+           ++comma;
         }
+        // comma = std::find(line_start, current, ',');
 
         if (comma < end) {
-            Record record;
-            record.key.assign(line_start, comma - line_start);
-            record.value.assign(comma + 1, end - (comma + 1));
-            records.push_back(std::move(record));
+            Record record{std::string(line_start, comma - line_start), std::string(comma + 1, end - (comma + 1))};
+            records.push_back(record);
         }
     }
 
@@ -115,13 +114,13 @@ int main(int argc, char* argv[]) {
 
         // Build hash tables
         for (auto& record : file1) {
-            file1_map.emplace(std::move(record.key), std::move(record));
+            file1_map.emplace(record.key, record);
         }
         for (auto& record : file2) {
-            file2_map.emplace(std::move(record.key), std::move(record));
+            file2_map.emplace(record.key, record);
         }
         for (auto& record : file4) {
-            file4_map.emplace(std::move(record.key), std::move(record));
+            file4_map.emplace(record.key, record);
         }
 
         // Set up output buffering

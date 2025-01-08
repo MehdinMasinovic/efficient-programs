@@ -46,8 +46,8 @@ More detailed pieces of information can be found in the source file.
 
 | Metric | Result |
 | --- | --- |
-| cycles (kernel) | 141105533992 |
-| cycles (user) | 3340195715171 |
+| cycles (kernel) | 141 105 533 992 |
+| cycles (user) | 3 340 195 715 171 |
 | IPC (kernel) | 0.94 |
 | IPC (user) | 1.7 |
 

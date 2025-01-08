@@ -89,6 +89,81 @@ std::vector<Record> readCSV(const std::string& filename) {
     return records;
 }
 
+std::unordered_multimap<std::string, Record> readCSVAndFillMap(const std::string& filename) {
+    std::unordered_multimap<std::string, Record> records;
+
+    // Open file using low-level I/O
+    int fd = open(filename.c_str(), O_RDONLY);
+    if (fd == -1) {
+        throw std::runtime_error("Cannot open file: " + filename);
+    }
+
+    // Get file size
+    struct stat sb;
+    if (fstat(fd, &sb) == -1) {
+        close(fd);
+        throw std::runtime_error("Cannot get file size");
+    }
+
+    // Memory map the file
+    const char* data = static_cast<const char*>(
+        mmap(nullptr, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0)
+    );
+
+    if (data == MAP_FAILED) {
+        close(fd);
+        throw std::runtime_error("Cannot mmap file");
+    }
+
+    // Pre-allocate space for records (estimate based on average line length)
+    size_t estimated_records = sb.st_size / 30;  // Assume average line length of 30 bytes
+    records.reserve(estimated_records);
+
+    // Process the memory-mapped file
+    const char* current = data;
+    const char* end = data + sb.st_size;
+    const char* line_start = current;
+
+    while (current < end) {
+        if (*current == '\n') {
+            // Find comma in current line
+            const char* comma = line_start;
+            // comma = std::find(line_start, current, ',');
+            while (comma < end && *comma != ',') {
+               ++comma;
+            }
+
+            if (comma < current) {
+                Record record{std::string(line_start, comma - line_start), std::string(comma + 1, current - (comma + 1))};
+                records.emplace(record.key, record);
+            }
+
+            line_start = current + 1;
+        }
+        ++current;
+    }
+
+    // Handle last line if it doesn't end with newline
+    if (line_start < end) {
+        const char* comma = line_start;
+        while (comma < end && *comma != ',') {
+           ++comma;
+        }
+        // comma = std::find(line_start, current, ',');
+
+        if (comma < end) {
+            Record record{std::string(line_start, comma - line_start), std::string(comma + 1, end - (comma + 1))};
+            records.emplace(record.key, record);
+        }
+    }
+
+    // Cleanup
+    munmap(const_cast<char*>(data), sb.st_size);
+    close(fd);
+
+    return records;
+}
+
 int main(int argc, char* argv[]) {
     if (argc != 5) {
         std::cerr << "Usage: " << argv[0] << " file1.csv file2.csv file3.csv file4.csv\n";
@@ -96,32 +171,11 @@ int main(int argc, char* argv[]) {
     }
 
     try {
-        // Read all files with buffered I/O
-        auto file1 = readCSV(argv[1]);
-        auto file2 = readCSV(argv[2]);
+        //read files and create data structures
+        auto file1_map = readCSVAndFillMap(argv[1]);
+        auto file2_map = readCSVAndFillMap(argv[2]);
         auto file3 = readCSV(argv[3]);
-        auto file4 = readCSV(argv[4]);
-
-        // Create hash maps
-        std::unordered_multimap<std::string, Record> file1_map;
-        std::unordered_multimap<std::string, Record> file2_map;
-        std::unordered_multimap<std::string, Record> file4_map;
-
-        // Reserve space in hash maps
-        file1_map.reserve(file1.size());
-        file2_map.reserve(file2.size());
-        file4_map.reserve(file4.size());
-
-        // Build hash tables
-        for (auto& record : file1) {
-            file1_map.emplace(record.key, record);
-        }
-        for (auto& record : file2) {
-            file2_map.emplace(record.key, record);
-        }
-        for (auto& record : file4) {
-            file4_map.emplace(record.key, record);
-        }
+        auto file4_map = readCSVAndFillMap(argv[4]);
 
         // Set up output buffering
         std::ios_base::sync_with_stdio(false);

@@ -1,18 +1,23 @@
 # Efficient Programs 2024/2025, Group 8
 ## Table of Contents
-
-* [Miro Link](#miro-link)
-* [TL;DR](#tl-dr)
-* [Efficient Join Implementation Project](#efficient-join-implementation-project)
-* [Project Overview](#project-overview)
-* [Problem Description](#problem-description)
-* [Reference Implementation](#reference-implementation)
-* [Test Data](#test-data)
-* [Performance Testing](#performance-testing)
-* [Verifying output correctness](#verifying-output-correctness)
-* [Key Requirements](#key-requirements)
-* [Implementation Notes](#implementation-notes)
-* [Project Structure](#project-structure)
+  * [Miro Link](#miro-link)
+  * [TL;DR](#tl-dr)
+  * [Makefile](#makefile)
+    + [Building](#building)
+    + [Verification](#verification)
+    + [Analysis](#analysis)
+    + [Debug & Run](#debug---run)
+    + [Cleaning](#cleaning)
+  * [Efficient Join Implementation Project](#efficient-join-implementation-project)
+  * [Project Overview](#project-overview)
+  * [Problem Description](#problem-description)
+  * [Reference Implementation](#reference-implementation)
+  * [Test Data](#test-data)
+  * [Performance Testing](#performance-testing)
+  * [Verifying output correctness](#verifying-output-correctness)
+  * [Key Requirements](#key-requirements)
+  * [Implementation Notes](#implementation-notes)
+  * [Project Structure](#project-structure)
 
 ## Miro Link
 

@@ -185,17 +185,24 @@ int main(int argc, char* argv[]) {
 
         // Perform join
         for (const auto& f3_record : file3) {
+            // calculate ranges for each map
             auto f4_range = file4_map.equal_range(f3_record.value);
+            if (f4_range.first == f4_range.second) continue; // Skip if no match in file4
+
+            auto f1_range = file1_map.equal_range(f3_record.key);
+            if (f1_range.first == f1_range.second) continue; // Skip if no match in file1
+
+            auto f2_range = file2_map.equal_range(f3_record.key);
+            if (f2_range.first == f2_range.second) continue; // Skip if no match in file2
+
             for (auto f4_it = f4_range.first; f4_it != f4_range.second; ++f4_it) {
-                auto f1_range = file1_map.equal_range(f3_record.key);
                 for (auto f1_it = f1_range.first; f1_it != f1_range.second; ++f1_it) {
-                    auto f2_range = file2_map.equal_range(f3_record.key);
                     for (auto f2_it = f2_range.first; f2_it != f2_range.second; ++f2_it) {
                         std::cout << f4_it->second.key << ","
-                                 << f1_it->second.key << ","
-                                 << f1_it->second.value << ","
-                                 << f2_it->second.value << ","
-                                 << f4_it->second.value << "\n";
+                                << f1_it->second.key << ","
+                                << f1_it->second.value << ","
+                                << f2_it->second.value << ","
+                                << f4_it->second.value << "\n";
                     }
                 }
             }

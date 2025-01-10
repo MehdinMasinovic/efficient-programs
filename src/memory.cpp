@@ -35,10 +35,15 @@ std::vector<Record> readCSV(const std::string& filename) {
         close(fd);
         throw std::runtime_error("Cannot get file size");
     }
+    
+    // Compute mapping size to align to page boundaries (reduces TLB misses)
+    size_t file_size = sb.st_size;
+    size_t page_size = sysconf(_SC_PAGESIZE);
+    size_t mapping_size = ((file_size + page_size - 1) / page_size) * page_size;
 
     // Memory map the file
     const char* data = static_cast<const char*>(
-        mmap(nullptr, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0)
+        mmap(nullptr, mapping_size, PROT_READ, MAP_PRIVATE, fd, 0)
     );
 
     if (data == MAP_FAILED) {
@@ -95,7 +100,7 @@ std::vector<Record> readCSV(const std::string& filename) {
     }
 
     // Cleanup
-    munmap(const_cast<char*>(data), sb.st_size);
+    munmap(const_cast<char*>(data), mapping_size);
     close(fd);
 
     return records;

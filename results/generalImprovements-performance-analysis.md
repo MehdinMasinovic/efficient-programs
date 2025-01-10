@@ -11,19 +11,19 @@ LC_NUMERIC=en_US perf stat -e cycles,instructions,branches,branch-misses myprogr
 ```
 
 ```
-cycles:          135,774,782,544
-instructions:    164,781,349,702  (1.21 insn per cycle)
-branches:         35,769,459,009
-branch-misses:       302,091,032  (0.84% of all branches)
-Time elapsed:         34.32 seconds
-User time:            32.92 seconds
-System time:           1.40 seconds
+cycles:          137,943,254,836
+instructions:    165,805,538,983  (1.20 insn per cycle)
+branches:         35,958,764,412
+branch-misses:       303,046,222  (0.84% of all branches)
+Time elapsed:         35.13 seconds
+User time:            33.64 seconds
+System time:           1.49 seconds
 ```
 
 ### Analysis
-- IPC (Instructions Per Cycle) of 1.21 indicates lower instruction-level parallelism compared to reference.
-- Branch misprediction rate of 0.84% is very low, showing highly efficient branch prediction.
-- ~96% of time spent in user mode, ~4% in system calls, suggesting limited system call overhead.
+- IPC (Instructions Per Cycle) of 1.20 indicates moderate instruction-level parallelism, slightly lower than the previous version.
+- Branch misprediction rate of 0.84% is very low, demonstrating efficient branch prediction.
+- ~96% of time spent in user mode, ~4% in system calls, indicating minimal system call overhead.
 
 ## Cache Performance
 
@@ -32,18 +32,18 @@ LC_NUMERIC=en_US perf stat -e L1-dcache-load-misses,L1-dcache-loads,LLC-load-mis
 ```
 
 ```
-L1-dcache-load-misses:   699,188,442  (1.28% of L1-dcache accesses)
-L1-dcache-loads:       54,652,471,208
-LLC-load-misses:          235,275,275
-Time elapsed:              34.32 seconds
-User time:                 32.92 seconds
-System time:                1.40 seconds
+L1-dcache-load-misses:   689,699,543  (1.26% of L1-dcache accesses)
+L1-dcache-loads:       54,892,868,962
+LLC-load-misses:          245,665,610
+Time elapsed:              35.13 seconds
+User time:                 33.64 seconds
+System time:                1.49 seconds
 ```
 
 ### Analysis
-- L1 cache miss rate of 1.28% reflects excellent cache utilization.
-- ~235M last-level cache misses suggest reduced memory access overhead compared to reference.
-- Cache performance is efficient, likely due to improved data locality.
+- L1 cache miss rate of 1.26% indicates excellent cache utilization, slightly better than the previous implementation.
+- ~246M last-level cache misses suggest moderate memory access overhead.
+- Overall, cache performance is efficient, with potential for minor improvements in data locality.
 
 ## User vs Kernel Mode Analysis
 
@@ -52,38 +52,36 @@ LC_NUMERIC=en_US perf stat -e cycles:k,cycles:u,instructions:k,instructions:u my
 ```
 
 ```
-cycles (kernel):      7,384,211,399
-cycles (user):      128,384,484,917
-instructions (kernel): 8,456,676,611  (1.15 insn per cycle)
-instructions (user): 156,440,177,716 (1.22 insn per cycle)
-Time elapsed:             34.32 seconds
-User time:                32.92 seconds
-System time:               1.40 seconds
+cycles (kernel):      6,835,674,390
+cycles (user):      131,083,729,750
+instructions (kernel): 9,261,555,735  (1.35 insn per cycle)
+instructions (user): 156,441,111,531 (1.19 insn per cycle)
+Time elapsed:             35.13 seconds
+User time:                33.64 seconds
+System time:               1.49 seconds
 ```
 
 ### Analysis
-- ~95% of cycles spent in user mode.
-- ~5% of cycles spent in kernel mode, demonstrating low system overhead.
-- Slightly higher IPC in user mode (1.22) compared to kernel mode (1.15).
-- User mode performance dominates, indicating the workload is primarily compute-bound.
+- ~95% of cycles spent in user mode, ~5% in kernel mode, consistent with low system overhead.
+- IPC in kernel mode (1.35) is higher than user mode (1.19), suggesting better efficiency for kernel instructions.
+- User mode dominates performance, indicating most processing occurs in user space.
 
 ## Key Optimization Opportunities
 1. **Instruction-Level Parallelism**
-   - IPC of 1.21 suggests moderate pipeline utilization.
-   - Opportunities may exist for algorithmic optimization to reduce instruction dependency.
+   - IPC of 1.20 suggests room for improvement in instruction pipeline utilization.
+   - Algorithmic optimizations to reduce instruction dependency could enhance performance.
 
 2. **Further Cache Optimization**
-   - While cache miss rates are low, even small improvements could yield significant performance benefits.
-   - Focus on data locality and access patterns.
+   - While L1 cache miss rates are low, further tuning of data locality and access patterns could yield additional gains.
 
 3. **System Call Minimization**
-   - System time accounts for only 4% of total time, but further reduction might still benefit compute-heavy workloads.
+   - With only ~4% of time spent in system calls, the overhead is minimal but could still benefit from batching or buffering optimizations.
 
 4. **Load Balancing**
-   - Disproportionate time in user mode suggests focusing on user-space optimization, particularly algorithmic or processing efficiency.
+   - Focusing on user-space optimizations, particularly around computational efficiency, could further enhance performance.
 
 ## General Improvements Performance Summary
-- Total Cycles: ~135.8 billion
-- Total Time: ~34.32 seconds
+- Total Cycles: ~137.9 billion
+- Total Time: ~35.13 seconds
 - Strengths include excellent branch prediction and cache performance.
-- Primary opportunities for improvement lie in instruction efficiency and further minimizing kernel involvement.
+- Optimization efforts should focus on instruction efficiency and maximizing IPC.

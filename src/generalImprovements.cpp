@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <cmath>
+#include <immintrin.h>  // For prefetching
 
 typedef uint64_t encoded_string_t;
 
@@ -201,7 +202,14 @@ int main(int argc, char* argv[]) {
         std::cout.rdbuf()->pubsetbuf(output_buffer, sizeof(output_buffer));
 
         // Perform join
-        for (const auto& f3_record : file3) {
+        for (size_t i = 0; i < file3.size(); ++i) {
+            const auto& f3_record = file3[i];
+
+            // Prefetch next record into cache
+            if (i + 1 < file3.size()) {
+                _mm_prefetch(reinterpret_cast<const char*>(&file3[i + 1]), _MM_HINT_T0);
+            }
+            
             // calculate ranges for each map
             auto f4_range = file4_map.equal_range(f3_record.value_encoded);
             if (f4_range.first == f4_range.second) continue; // Skip if no match in file4

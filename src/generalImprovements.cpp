@@ -1,15 +1,20 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cstring>
 #include <vector>
 #include <unordered_map>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
-//#include <algorithm>
+#include <cmath>
+
+typedef uint64_t encoded_string_t;
 
 struct Record {
+    encoded_string_t key_encoded;
+    encoded_string_t value_encoded;
     std::string key;
     std::string value;
 };
@@ -53,14 +58,17 @@ std::vector<Record> readCSV(const std::string& filename) {
         if (*current == '\n') {
             // Find comma in current line
             const char* comma = line_start;
-            // comma = std::find(line_start, current, ',');
-            while (comma < end && *comma != ',') {
-               ++comma;
+            while (comma < current && *comma != ',') {
+                ++comma;
             }
 
             if (comma < current) {
-                Record record{std::string(line_start, comma - line_start), std::string(comma + 1, current - (comma + 1))};
-                records.push_back(record);
+                Record record;
+                record.key.assign(line_start, comma - line_start);
+                record.value.assign(comma + 1, current - (comma + 1));
+                record.key_encoded = std::hash<std::string>{}(record.key);
+                record.value_encoded = std::hash<std::string>{}(record.value);
+                records.push_back(std::move(record));
             }
 
             line_start = current + 1;
@@ -72,13 +80,16 @@ std::vector<Record> readCSV(const std::string& filename) {
     if (line_start < end) {
         const char* comma = line_start;
         while (comma < end && *comma != ',') {
-           ++comma;
+            ++comma;
         }
-        // comma = std::find(line_start, current, ',');
 
         if (comma < end) {
-            Record record{std::string(line_start, comma - line_start), std::string(comma + 1, end - (comma + 1))};
-            records.push_back(record);
+            Record record;
+            record.key.assign(line_start, comma - line_start);
+            record.value.assign(comma + 1, current - (comma + 1));
+            record.key_encoded = std::hash<std::string>{}(record.key);
+            record.value_encoded = std::hash<std::string>{}(record.value);
+            records.push_back(std::move(record));
         }
     }
 
@@ -89,8 +100,8 @@ std::vector<Record> readCSV(const std::string& filename) {
     return records;
 }
 
-std::unordered_multimap<std::string, Record> readCSVAndFillMap(const std::string& filename) {
-    std::unordered_multimap<std::string, Record> records;
+std::unordered_multimap<encoded_string_t, Record> readCSVAndFillMap(const std::string& filename) {
+    std::unordered_multimap<encoded_string_t, Record> records;
 
     // Open file using low-level I/O
     int fd = open(filename.c_str(), O_RDONLY);
@@ -128,14 +139,17 @@ std::unordered_multimap<std::string, Record> readCSVAndFillMap(const std::string
         if (*current == '\n') {
             // Find comma in current line
             const char* comma = line_start;
-            // comma = std::find(line_start, current, ',');
-            while (comma < end && *comma != ',') {
-               ++comma;
+            while (comma < current && *comma != ',') {
+                ++comma;
             }
 
             if (comma < current) {
-                Record record{std::string(line_start, comma - line_start), std::string(comma + 1, current - (comma + 1))};
-                records.emplace(record.key, record);
+                Record record;
+                record.key.assign(line_start, comma - line_start);
+                record.value.assign(comma + 1, current - (comma + 1));
+                record.key_encoded = std::hash<std::string>{}(record.key);
+                record.value_encoded = std::hash<std::string>{}(record.value);
+                records.emplace(record.key_encoded, record);
             }
 
             line_start = current + 1;
@@ -147,13 +161,16 @@ std::unordered_multimap<std::string, Record> readCSVAndFillMap(const std::string
     if (line_start < end) {
         const char* comma = line_start;
         while (comma < end && *comma != ',') {
-           ++comma;
+            ++comma;
         }
-        // comma = std::find(line_start, current, ',');
 
         if (comma < end) {
-            Record record{std::string(line_start, comma - line_start), std::string(comma + 1, end - (comma + 1))};
-            records.emplace(record.key, record);
+            Record record;
+            record.key.assign(line_start, comma - line_start);
+            record.value.assign(comma + 1, current - (comma + 1));
+            record.key_encoded = std::hash<std::string>{}(record.key);
+            record.value_encoded = std::hash<std::string>{}(record.value);
+            records.emplace(record.key_encoded, record);
         }
     }
 
@@ -180,19 +197,19 @@ int main(int argc, char* argv[]) {
         // Set up output buffering
         std::ios_base::sync_with_stdio(false);
         std::cout.tie(nullptr);
-        char output_buffer[1024*1024*5];  // 5MB output buffer
+        char output_buffer[1024*1024*3];  // 3MB output buffer
         std::cout.rdbuf()->pubsetbuf(output_buffer, sizeof(output_buffer));
 
         // Perform join
         for (const auto& f3_record : file3) {
             // calculate ranges for each map
-            auto f4_range = file4_map.equal_range(f3_record.value);
+            auto f4_range = file4_map.equal_range(f3_record.value_encoded);
             if (f4_range.first == f4_range.second) continue; // Skip if no match in file4
 
-            auto f1_range = file1_map.equal_range(f3_record.key);
+            auto f1_range = file1_map.equal_range(f3_record.key_encoded);
             if (f1_range.first == f1_range.second) continue; // Skip if no match in file1
 
-            auto f2_range = file2_map.equal_range(f3_record.key);
+            auto f2_range = file2_map.equal_range(f3_record.key_encoded);
             if (f2_range.first == f2_range.second) continue; // Skip if no match in file2
 
             for (auto f4_it = f4_range.first; f4_it != f4_range.second; ++f4_it) {

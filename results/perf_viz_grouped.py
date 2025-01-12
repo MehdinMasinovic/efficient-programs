@@ -8,8 +8,8 @@ from typing import List, Dict, Tuple
 # Define implementation order
 IMPLEMENTATION_ORDER = [
     'reference', 'baseline', 'hashmap', 'hashmap_size_estim',
-    'optimize_io', 'string_encoding', 'string_encoding_2',
-    'memory', 'generalImprovementsV4'
+    'optimize_io', 'string_encoding', 'string_hashing',
+    'memory', 'generalImprovementsV4', 'pointer'
 ]
 
 # List of metrics where lower values indicate better performance

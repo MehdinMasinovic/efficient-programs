@@ -235,6 +235,66 @@ def create_metric_group_plot(df: pd.DataFrame, group_config: Dict, implementatio
     plt.tight_layout()
 
     return fig
+
+
+def create_progressive_cycles_plot(df: pd.DataFrame, implementations: List[str]) -> None:
+    """Create progressive line plots showing cycles improvement over implementations."""
+    # Set style
+    plt.style.use('ggplot')
+
+    # Create output directory for plots
+    output_dir = "./performance_plots/progressive"
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
+
+    # Get cycles data
+    cycles_data = []
+    for impl in implementations:
+        value = df[(df['implementation'] == impl) &
+                   (df['metric'] == 'cycles')]['value'].iloc[0]
+        cycles_data.append(value / 1e9)  # Convert to billions
+
+    # Create a plot for each progressive step
+    for i in range(len(implementations)):
+        fig, ax = plt.subplots(figsize=(15, 8))
+
+        # Plot data up to current implementation
+        current_data = cycles_data[:i + 1]
+        current_impls = implementations[:i + 1]
+
+        # Create line plot
+        ax.plot(range(len(implementations)), [None] * len(implementations),
+                'gray', alpha=0.2, linestyle='--')  # Ghost line for full range
+        ax.plot(range(len(current_impls)), current_data,
+                'b-o', linewidth=2, markersize=8)
+
+        # Customize plot
+        ax.set_title(f'Progressive Cycles Analysis (First {i + 1} Implementation{"s" if i > 0 else ""})',
+                     pad=20, fontsize=14, fontweight='bold')
+        ax.set_ylabel('Cycles (Billions)', fontsize=12)
+        ax.set_xlabel('Implementation', fontsize=12)
+
+        # Set x-ticks for all implementations
+        ax.set_xticks(range(len(implementations)))
+        ax.set_xticklabels([impl.replace('_', '\n') for impl in implementations],
+                           rotation=45, ha='right')
+
+        # Add grid
+        ax.grid(True, axis='y', linestyle='--', alpha=0.7)
+
+        # Add value labels for plotted points
+        for j, value in enumerate(current_data):
+            ax.text(j, value, f'{value:.1f}B',
+                    ha='center', va='bottom')
+
+        # Adjust layout
+        plt.tight_layout()
+
+        # Save plot
+        fig.savefig(f"{output_dir}/cycles_progress_{i + 1}.png",
+                    dpi=300, bbox_inches='tight')
+        plt.close(fig)
+
+
 def main():
     # Define metric groups
     metric_groups = {
@@ -293,6 +353,9 @@ def main():
             fig.savefig(f"{output_dir}/{group_name}_metrics.png",
                         dpi=300, bbox_inches='tight')
             plt.close(fig)
+
+        # Create progressive cycles plots
+        create_progressive_cycles_plot(df, available_impls)
 
         print(f"Successfully generated plots in {output_dir}")
 
